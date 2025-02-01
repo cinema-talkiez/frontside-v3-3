@@ -11,18 +11,36 @@ export default function VerifyPage() {
     setIsVerifying(true);
     setErrorMessage("");
 
-    // Replace with your actual GPLinks API token and callback URL
-    const apiToken = "e5bf7301b4ad442d45481de99fd656a182ec6507";
-    const callbackUrl = "https://injured-harriet-cinema-talkies-87f4a1d2.koyeb.app/verification/";
+    const apiToken = "e5bf7301b4ad442d45481de99fd656a182ec6507"; // Your GPLinks API token
+    const callbackUrl = "https://injured-harriet-cinema-talkies-87f4a1d2.koyeb.app/verification"; // Update with your domain
     const apiUrl = `https://api.gplinks.com/api?api=${apiToken}&url=${encodeURIComponent(callbackUrl)}`;
 
     try {
       const response = await fetch(apiUrl);
       if (!response.ok) throw new Error(`Server responded with ${response.status}`);
-      const result = await response.json();
 
+      const result = await response.json();
       if (result.status === "success" && result.shortenedUrl) {
-        window.location.href = result.shortenedUrl; // Redirect to GPLinks verification page
+        const verificationUrl = result.shortenedUrl;
+
+        // Try to open in Chrome (Windows only)
+        const chromeUrl = `googlechrome://navigate?url=${encodeURIComponent(verificationUrl)}`;
+        const newTab = window.open(chromeUrl, "_blank");
+
+        // If Chrome doesn't open, fallback to default browser
+        setTimeout(() => {
+          if (!newTab || newTab.closed || typeof newTab.closed === "undefined") {
+            window.open(verificationUrl, "_blank"); // Fallback to normal browser
+          }
+        }, 1000);
+
+        // Polling to check when the user comes back
+        let interval = setInterval(() => {
+          if (document.hidden === false) {
+            clearInterval(interval);
+            router.push("/verification"); // Redirect back when user returns
+          }
+        }, 3000);
       } else {
         throw new Error(result.message || "Verification failed.");
       }
