@@ -34,7 +34,7 @@ export default function Home() {
   }, []);
 
   const handleVerify = () => {
-    router.push("/verification"); // Redirect to verification page
+    router.push("/verify"); // Redirect to verification page
   };
 
   const handleVisit = () => {
