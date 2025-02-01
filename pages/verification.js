@@ -1,16 +1,11 @@
 import { useEffect } from "react";
-import { useRouter } from "next/router";
+import { saveVerificationTime } from "@/utils/db";
 
 export default function Verification() {
-  const router = useRouter();
-
   useEffect(() => {
-    // Store verification time in localStorage
-    localStorage.setItem("verified_at", Date.now().toString());
+    saveVerificationTime(); // Save verification time in IndexedDB
+    window.location.href = "/"; // Redirect back to home
+  }, []);
 
-    // Redirect back to home page
-    router.push("/");
-  }, [router]);
-
-  return <h1>Verification Successful! Redirecting...</h1>;
+  return <h2>Verification Successful! Redirecting...</h2>;
 }
