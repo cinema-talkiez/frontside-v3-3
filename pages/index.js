@@ -1,37 +1,34 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { getVerificationTime, clearVerification } from "@/utils/db";
 
 export default function Home() {
-  const [verified, setVerified] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const checkVerification = () => {
-      const lastVerified = localStorage.getItem("verified_time");
-      if (lastVerified) {
-        const currentTime = new Date().getTime();
-        const expiryTime = 5 * 60 * 1000; // 5 minutes
-        if (currentTime - lastVerified < expiryTime) {
-          setVerified(true);
+    const checkVerification = async () => {
+      const verifiedTime = await getVerificationTime();
+      if (verifiedTime) {
+        const timeDiff = Date.now() - verifiedTime;
+        if (timeDiff <= 5 * 60 * 1000) { // If verified within 5 minutes
+          setIsVerified(true);
         } else {
-          localStorage.removeItem("verified_time"); // Expired, remove it
-          setVerified(false);
+          await clearVerification(); // Clear expired verification
         }
       }
     };
 
     checkVerification();
-    const interval = setInterval(checkVerification, 1000); // Check every second
-
-    return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
   return (
     <div>
       <button onClick={() => router.push("/verify")}>Verify</button>
+
       <button 
-        onClick={() => router.push("/index1")} 
-        disabled={!verified}
+        onClick={() => router.push("/index1")}
+        disabled={!isVerified} // Disable if not verified
       >
         Visit
       </button>
