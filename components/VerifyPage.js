@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FcApproval } from "react-icons/fc";
-//import styles from "./VerifyPage.module.css"; // Optional: Add your CSS for styling
+import styles from "./VerifyPage.module.css"; // Optional: Add your CSS for styling
 
 export default function VerifyPage() {
   const [isVerifying, setIsVerifying] = useState(false);
