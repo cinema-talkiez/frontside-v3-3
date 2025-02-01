@@ -5,34 +5,21 @@ export default function VerifyPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleVerification = async () => {
+  const handleVerification = () => {
     setIsVerifying(true);
     setErrorMessage("");
 
-    // Replace with your actual GPLinks API token and callback URL
-    const apiToken = "e5bf7301b4ad442d45481de99fd656a182ec6507";
-    const callbackUrl = "https://injured-harriet-cinema-talkies-87f4a1d2.koyeb.app/verification/";
-    const apiUrl = `https://api.gplinks.com/api?api=${apiToken}&url=${encodeURIComponent(callbackUrl)}`;
+    // Custom URL Scheme to open your app (for both iOS and Android)
+    const appLink = "myapp://verification"; // Replace with your app's deep link URL scheme
+    const fallbackUrl = "https://mywebsite.com/verification"; // Fallback URL (could be a web page or app store URL)
 
-    try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error(`Server responded with ${response.status}`);
-      const result = await response.json();
+    // Try opening the app (deep link)
+    window.location = appLink;
 
-      if (result.status === "success" && result.shortenedUrl) {
-        // Open GPLinks verification in a popup window
-        const popup = window.open(result.shortenedUrl, "GPLinksVerification", "width=600,height=800");
-
-        if (!popup) {
-          throw new Error("Popup blocked! Allow popups and try again.");
-        }
-      } else {
-        throw new Error(result.message || "Verification failed.");
-      }
-    } catch (error) {
-      setErrorMessage(error.message || "An error occurred.");
-      setIsVerifying(false);
-    }
+    // Fallback logic: if the app is not installed, wait a bit, then redirect to fallback URL
+    setTimeout(() => {
+      window.location = fallbackUrl;
+    }, 2000); // 2-second delay before fallback (adjust based on your needs)
   };
 
   return (
