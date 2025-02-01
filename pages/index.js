@@ -23,18 +23,15 @@ export default function Home() {
       }
     };
 
-    checkVerification(); // Initial check
+    checkVerification(); // Check on mount
 
-    // Update countdown every second
-    const interval = setInterval(() => {
-      checkVerification();
-    }, 1000);
-
-    return () => clearInterval(interval); // Cleanup
+    // Sync verification status every second
+    const interval = setInterval(checkVerification, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleVerify = () => {
-    router.push("/verify"); // Redirect to verification page
+    router.push("/verify"); // Redirect to verify.js (gplinks process)
   };
 
   const handleVisit = () => {
@@ -44,8 +41,8 @@ export default function Home() {
   };
 
   const formatTime = (ms) => {
+    const minutes = Math.floor(ms / 1000 / 60);
     const seconds = Math.floor((ms / 1000) % 60);
-    const minutes = Math.floor((ms / 1000 / 60) % 60);
     return `${minutes}m ${seconds}s`;
   };
 
@@ -56,7 +53,6 @@ export default function Home() {
 
       {isVerified && <p>Expires in: {formatTime(remainingTime)}</p>}
 
-      {/* Visit Button enabled only if verified */}
       <button disabled={!isVerified} onClick={handleVisit}>
         Visit
       </button>
