@@ -4,13 +4,12 @@ import { FcApproval } from "react-icons/fc";
 export default function VerifyPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [verificationUrl, setVerificationUrl] = useState("");
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
 
   const handleVerification = async () => {
     setIsVerifying(true);
     setErrorMessage("");
 
+    // Replace with your actual GPLinks API token and callback URL
     const apiToken = "e5bf7301b4ad442d45481de99fd656a182ec6507";
     const callbackUrl = "https://injured-harriet-cinema-talkies-87f4a1d2.koyeb.app/verification/";
     const apiUrl = `https://api.gplinks.com/api?api=${apiToken}&url=${encodeURIComponent(callbackUrl)}`;
@@ -21,8 +20,12 @@ export default function VerifyPage() {
       const result = await response.json();
 
       if (result.status === "success" && result.shortenedUrl) {
-        setVerificationUrl(result.shortenedUrl);
-        setIsOverlayOpen(true); // Open full-screen overlay
+        // Open GPLinks verification in a popup window
+        const popup = window.open(result.shortenedUrl, "GPLinksVerification", "width=600,height=800");
+
+        if (!popup) {
+          throw new Error("Popup blocked! Allow popups and try again.");
+        }
       } else {
         throw new Error(result.message || "Verification failed.");
       }
@@ -44,20 +47,6 @@ export default function VerifyPage() {
           <FcApproval className="icon1" />
           {isVerifying ? "Verifying..." : "Verify Now"}
         </button>
-
-        {/* Full-screen overlay */}
-        {isOverlayOpen && (
-          <div className="overlay">
-            <button className="closeOverlay" onClick={() => setIsOverlayOpen(false)}>✖</button>
-            <iframe 
-              src={verificationUrl} 
-              width="100%" 
-              height="100%" 
-              style={{ border: "none" }}
-              sandbox="allow-scripts allow-same-origin allow-popups"
-            />
-          </div>
-        )}
 
         <p>After verification, you will be redirected back automatically.</p>
       </div>
