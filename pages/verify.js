@@ -1,10 +1,14 @@
 import { useState } from "react";
+import Modal from "react-modal";
 import { FcApproval } from "react-icons/fc";
+
+Modal.setAppElement("#__next"); // Required for accessibility in Next.js
 
 export default function VerifyPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [verificationUrl, setVerificationUrl] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleVerification = async () => {
     setIsVerifying(true);
@@ -20,7 +24,8 @@ export default function VerifyPage() {
       const result = await response.json();
 
       if (result.status === "success" && result.shortenedUrl) {
-        setVerificationUrl(result.shortenedUrl); // Set URL for iframe
+        setVerificationUrl(result.shortenedUrl);
+        setIsModalOpen(true); // Open modal
       } else {
         throw new Error(result.message || "Verification failed.");
       }
@@ -38,19 +43,36 @@ export default function VerifyPage() {
 
         {errorMessage && <p className="error">{errorMessage}</p>}
 
-        {!verificationUrl ? (
-          <button onClick={handleVerification} disabled={isVerifying} className="verifyButton">
-            <FcApproval className="icon1" />
-            {isVerifying ? "Verifying..." : "Verify Now"}
-          </button>
-        ) : (
-          <iframe
-            src={verificationUrl}
-            width="100%"
-            height="500px"
-            style={{ border: "none", marginTop: "20px" }}
-          />
-        )}
+        <button onClick={handleVerification} disabled={isVerifying} className="verifyButton">
+          <FcApproval className="icon1" />
+          {isVerifying ? "Verifying..." : "Verify Now"}
+        </button>
+
+        {/* Modal for GPLinks Verification */}
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={() => setIsModalOpen(false)}
+          className="modal"
+          overlayClassName="overlay"
+        >
+          <div className="modalContent">
+            <h2>Complete Verification</h2>
+            {verificationUrl ? (
+              <iframe
+                src={verificationUrl}
+                width="100%"
+                height="500px"
+                style={{ border: "none" }}
+                sandbox="allow-scripts allow-same-origin allow-popups"
+              />
+            ) : (
+              <p>Loading verification...</p>
+            )}
+            <button onClick={() => setIsModalOpen(false)} className="closeButton">
+              Close
+            </button>
+          </div>
+        </Modal>
 
         <p>After verification, you will be redirected back automatically.</p>
       </div>
