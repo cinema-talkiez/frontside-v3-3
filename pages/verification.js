@@ -5,11 +5,12 @@ export default function Verification() {
   const router = useRouter();
 
   useEffect(() => {
-    setTimeout(() => {
-      localStorage.setItem("verified_at", Date.now().toString()); // Store verification time
-      router.push("/"); // Redirect back to index.js
-    }, 2000); // Simulate verification delay
+    // Store verification time in localStorage
+    localStorage.setItem("verified_at", Date.now().toString());
+
+    // Redirect back to home page
+    router.push("/");
   }, [router]);
 
-  return <h1>Verifying... Please wait.</h1>;
+  return <h1>Verification Successful! Redirecting...</h1>;
 }
