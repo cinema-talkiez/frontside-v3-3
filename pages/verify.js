@@ -13,7 +13,7 @@ export default function VerifyPage() {
 
     // Replace with your actual GPLinks API token and callback URL
     const apiToken = "e5bf7301b4ad442d45481de99fd656a182ec6507";
-    const callbackUrl = "https://injured-harriet-cinema-talkies-87f4a1d2.koyeb.app/verification-success/";
+    const callbackUrl = "https://injured-harriet-cinema-talkies-87f4a1d2.koyeb.app/verification/";
     const apiUrl = `https://api.gplinks.com/api?api=${apiToken}&url=${encodeURIComponent(callbackUrl)}`;
 
     try {
