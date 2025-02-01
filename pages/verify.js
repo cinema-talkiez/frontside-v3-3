@@ -1,14 +1,11 @@
 import { useState } from "react";
-import Modal from "react-modal";
 import { FcApproval } from "react-icons/fc";
-
-Modal.setAppElement("#__next"); // Required for accessibility in Next.js
 
 export default function VerifyPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [verificationUrl, setVerificationUrl] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
 
   const handleVerification = async () => {
     setIsVerifying(true);
@@ -25,7 +22,7 @@ export default function VerifyPage() {
 
       if (result.status === "success" && result.shortenedUrl) {
         setVerificationUrl(result.shortenedUrl);
-        setIsModalOpen(true); // Open modal
+        setIsOverlayOpen(true); // Open full-screen overlay
       } else {
         throw new Error(result.message || "Verification failed.");
       }
@@ -48,31 +45,19 @@ export default function VerifyPage() {
           {isVerifying ? "Verifying..." : "Verify Now"}
         </button>
 
-        {/* Modal for GPLinks Verification */}
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={() => setIsModalOpen(false)}
-          className="modal"
-          overlayClassName="overlay"
-        >
-          <div className="modalContent">
-            <h2>Complete Verification</h2>
-            {verificationUrl ? (
-              <iframe
-                src={verificationUrl}
-                width="100%"
-                height="500px"
-                style={{ border: "none" }}
-                sandbox="allow-scripts allow-same-origin allow-popups"
-              />
-            ) : (
-              <p>Loading verification...</p>
-            )}
-            <button onClick={() => setIsModalOpen(false)} className="closeButton">
-              Close
-            </button>
+        {/* Full-screen overlay */}
+        {isOverlayOpen && (
+          <div className="overlay">
+            <button className="closeOverlay" onClick={() => setIsOverlayOpen(false)}>✖</button>
+            <iframe 
+              src={verificationUrl} 
+              width="100%" 
+              height="100%" 
+              style={{ border: "none" }}
+              sandbox="allow-scripts allow-same-origin allow-popups"
+            />
           </div>
-        </Modal>
+        )}
 
         <p>After verification, you will be redirected back automatically.</p>
       </div>
