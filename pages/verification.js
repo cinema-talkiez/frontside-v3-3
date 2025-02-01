@@ -1,11 +1,24 @@
-import { useEffect } from "react";
-import { saveVerificationTime } from "@/utils/db";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
-export default function Verification() {
+export default function VerificationPage() {
+  const [verificationStatus, setVerificationStatus] = useState("Waiting for verification...");
+  const router = useRouter();
+
   useEffect(() => {
-    saveVerificationTime(); // Save verification time in IndexedDB
-    window.location.href = "/"; // Redirect back to home
-  }, []);
+    const { query } = router;
 
-  return <h2>Verification Successful! Redirecting...</h2>;
+    if (query.status === "success") {
+      setVerificationStatus("✅ Verification successful! You can now proceed.");
+    } else if (query.status === "failed") {
+      setVerificationStatus("❌ Verification failed. Please try again.");
+    }
+  }, [router]);
+
+  return (
+    <div className="verificationPage">
+      <h2>{verificationStatus}</h2>
+      <button onClick={() => router.push("/dashboard")}>Go to Dashboard</button>
+    </div>
+  );
 }
